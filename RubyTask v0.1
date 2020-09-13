@@ -1,0 +1,184 @@
+require 'watir'
+require 'selenium-webdriver'
+require 'json'
+
+b = Watir::Browser.new :firefox
+b.goto 'https://demo.bendigobank.com.au/banking/sign_in'
+
+#Входим
+
+(b.button value: 'personal').click
+
+# Копируем данные 
+
+#name_account = b.div(class:'_23LTBXgogQ').child.child.child
+=begin 
+Берем первый элемент из счета, 
+ибо в демке банка нет определения в какой валюте счета, 
+кроме значка
+=end
+=begin
+currency = b.div(class: '_3r9Q7pu08-').child.text[0] 
+
+balance = b.div(class: '_3r9Q7pu08-').child.text.slice(1..-1)
+
+nature = b.h2(class: '_3r-FF99lrp').text=end
+
+#проскролим, чтобы все транзакции прогрузились(костыльновато)
+=begin 
+sleep 5
+b.execute_script("window.scrollBy(0,4500)")
+sleep 3
+b.execute_script("window.scrollBy(0,4500)")
+sleep 5
+b.execute_script("window.scrollBy(0,4500)")
+sleep 5
+b.execute_script("window.scrollBy(0,4500)")
+sleep 5
+b.execute_script("window.scrollBy(0,4500)")
+=end
+
+=begin 
+transactions = b.ol(class: 'grouped-list grouped-list--compact grouped-list--indent')
+
+list = b.ol(class: 'grouped-list grouped-list--compact grouped-list--indent')
+=end
+#если надо вывести олю, то цикл вот
+
+=begin 
+list.each do |li|              
+ puts li.text
+end
+=end
+
+class Account
+
+	def get_name_account 
+		puts "#{@name_account}"
+	end
+
+	def name_account
+		@name_account = b.div(class:'_23LTBXgogQ').child.child.child.text
+	end
+
+
+	def get_currency
+		puts "#{@currency}"
+	end
+
+	def currency
+		@currency = b.div(class: '_3r9Q7pu08-').child.text[0] 
+	end
+
+
+	def get_balance
+		puts "#{@balance}"
+	end
+
+	def balance
+		@balance = b.div(class: '_3r9Q7pu08-').child.text.slice(1..-1)
+	end
+
+
+	def get_nature
+		puts "#{@nature}"
+	end
+
+	def nature
+		@nature = b.h2(class: '_3r-FF99lrp').text
+	end
+
+	def get_transactions
+		@transactions
+
+	end
+
+	def transactions
+		 sleep 5
+		b.execute_script("window.scrollBy(0,4500)")
+		sleep 3
+		b.execute_script("window.scrollBy(0,4500)")
+		sleep 5
+		b.execute_script("window.scrollBy(0,4500)")
+		sleep 5
+		b.execute_script("window.scrollBy(0,4500)")
+		sleep 5
+		b.execute_script("window.scrollBy(0,4500)")
+		@transactions_ol =  b.ol(class: 'grouped-list grouped-list--compact grouped-list--indent')
+		@transactions = ''
+
+		@transactions_ol.each do |li|              
+ 			@transactions += li.text
+ 		end
+	end
+
+		def set_all_UserInfo
+			b = Watir::Browser.new :firefox
+			b.goto 'https://demo.bendigobank.com.au/banking/sign_in'
+
+			#Входим
+			(b.button value: 'personal').click
+			# Копируем данные 
+			@name_account = name_account = b.div(class:'_23LTBXgogQ').child.child.child.text
+			@currency = b.div(class: '_3r9Q7pu08-').child.text[0] 
+			@balance = b.div(class: '_3r9Q7pu08-').child.text.slice(1..-1)
+			@nature = b.h2(class: '_3r-FF99lrp').text
+			# Для записи всех транзакция надо обойти подгрузку при скролинге
+		
+		#b.execute_script("window.scrollBy(0,4500)")
+	#	sleep 5
+	#	b.execute_script("window.scrollBy(0,4500)")
+	#	sleep 5
+	#	b.execute_script("window.scrollBy(0,4500)")
+	#	sleep 5
+	#	b.execute_script("window.scrollBy(0,4500)")
+	#	sleep 5
+	#	b.execute_script("window.scrollBy(0,4500)")
+	#	sleep 5
+		@transactions_ol =  b.ol(class: 'grouped-list grouped-list--compact grouped-list--indent')
+		@transactions=[]
+
+		@transactions_ol.each do |li|              
+ 			@transactions.push( "#{li.text} ")
+
+ 		end
+
+
+
+		end
+
+		def get_all_UserInfo
+
+			system('cls')
+			json_out= {"name" => @name_account,"currency" => @currency,"balance" => @balance,"nature" => @nature,"transactions" => @transactions}
+			#puts ("{ \n'accounts':[")
+			puts json_out.to_json.chomp 
+			
+			#puts "}\n]\n}"
+
+			#puts @name_account.text.to_json, @currency.to_json , @balance.to_json , @nature.to_json
+			
+			#puts "Transactions:"
+			#@transactions.each do |li|              
+ 			#puts li.text
+ 			
+ 		
+ 		end
+
+
+
+end
+
+
+
+herewego = Account.new
+	herewego.set_all_UserInfo
+	#herewego.get_all_UserInfo
+	#puts herewego.get_transactions
+
+
+	transactions_string = herewego.get_transactions.to_json
+	while 
+	transactions_string	
+	end
+	 
