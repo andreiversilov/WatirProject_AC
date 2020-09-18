@@ -25,7 +25,9 @@ class Account
 
   end
 
-
+ def oldversion
+   @oldversion
+ end
 
   #all methods in one method
   def set_all_UserInfo
@@ -53,6 +55,14 @@ class Account
 	sleep 5
 	@transactions_ol =  b.ol(class: 'grouped-list grouped-list--compact grouped-list--indent')
 	@transactions = []
+  #Delete me please
+
+  @oldversion = []
+  @transactions_ol.drop(1).each_with_index do |li,i|
+     @oldversion.push(li.text)
+   end
+
+  #Delete him please
   system("cls")
   arrayOfMounts = ["JANUARY", "FEBRUARY","MARCH", "APRIL","MAY","JUNE","JULE","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   dataOfTr = ""
@@ -79,16 +89,9 @@ class Account
 
 
     end
-     # if (li.text.include?(arrayOfMounts.to_s))
-     #    dataOfTr = li.text.split("/n").first
-     #    @transactions.push(li.text)
-     # else
-     #   @transactions.push("#{dataOfTr + "\n" + li.text} ")
       end
 end
 end
-
-
 
 
 	def get_all_UserInfo
@@ -104,53 +107,62 @@ end
 
  	end
 
+end
 
+
+class Transactions
+
+
+  def data
+    puts @data
+  end
+
+  def description
+    puts @description
+  end
+
+  def amount
+    puts @amount
+  end
+
+  def currency
+    puts @currency
+  end
+
+  def account_name
+    puts @account_name
+  end
+
+  def set_allDataTr(transaction,account_name)
+
+  @data = transaction.slice!(0..transaction.index("\n"))
+  transaction.chop!
+  @currency = transaction.slice!((transaction.rindex("\n")+1)..(transaction.rindex("\n")+1))
+  @amount =transaction.slice!(transaction.rindex("\n")..-1)
+  @account_name = account_name
+  @description = transaction
+end
 
 end
 
 
+testobj = Account.new
+testobj.set_all_UserInfo
+puts testobj.oldversion
+transobj = Transactions.new
+transobj.set_allDataTr(testobj.transactions[0], testobj.name_account)
 
- testobj = Account.new
- testobj.set_all_UserInfo
- puts testobj.transactions
-
-
-
-# class Transactions
+# puts "Here is the name "
+# puts transobj.account_name
 #
+# puts "Here is the amount"
+# puts transobj.amount
 #
-#   def data
-#     puts @data
-#   end
+# puts "Here is the currency"
+# puts transobj.currency
 #
-#   def description
-#     puts @description
-#   end
+# puts "Here is the description"
+# puts transobj.description
 #
-#   def amount
-#     puts @amount
-#   end
-#
-#   def currency
-#     puts @currency
-#   end
-#
-#   def account_name
-#     puts @account_name
-#   end
-#
-#   def set_allDataTr(transaction)
-#   @transaction = transaction
-#   @data =
-#   @description =
-#   @amount =
-#   @currency =
-#   @account_name =
-#
-#
-#
-#
-#
-#
-#
-# end
+# puts "Here is the data"
+# puts transobj.data

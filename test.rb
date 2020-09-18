@@ -1,16 +1,11 @@
+require 'watir'
+require 'selenium-webdriver'
+require 'json'
+
+b = Watir::Browser.new :firefox
+b.goto 'https://demo.bendigobank.com.au/banking/sign_in'
+	(b.button value: 'personal').click
 
 
-
-x = "Lel  1 Pek TR TR TR Lel 2 Pek "
-
-
-x.slice!(x.index("lel")..(x.index("Pek")+3))
-puts x
-
-
-     # if (li.text.include?(arrayOfMounts.to_s))
-     #    dataOfTr = li.text.split("/n").first
-     #    @transactions.push(li.text)
-     # else
-     #   @transactions.push("#{dataOfTr + "\n" + li.text} ")
-     # end
+transactions_ol =  b.ol(class: 'grouped-list grouped-list--compact grouped-list--indent')
+puts b.ol(class: 'grouped-list grouped-list--compact grouped-list--indent').child.child.child.child.child.child.child.child.style()
