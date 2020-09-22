@@ -3,7 +3,6 @@ require 'selenium-webdriver'
 require 'json'
 
 class Account
-
   def name_account
     @name_account
   end
@@ -22,27 +21,25 @@ class Account
 
   def transactions
     @transactions
-
   end
 
- def oldversion
-   @oldversion
- end
+  def numberOfTr
+    @numberOfTr
+  end
 
-  #all methods in one method
   def set_all_UserInfo
+    #Enter
     b = Watir::Browser.new :firefox
-	b.goto 'https://demo.bendigobank.com.au/banking/sign_in'
+	  b.goto 'https://demo.bendigobank.com.au/banking/sign_in'
+	 (b.button value: 'personal').click
 
-	#Входим
-	(b.button value: 'personal').click
-	# Копируем данные
+	# parse data
 	@name_account = b.div(class:'_23LTBXgogQ').child.child.child.text
 	@currency = b.div(class: 'css-135oqyi').child.text[0]
 	@balance = b.div(class: 'css-1g6c8h1').child.text.slice(1..-1)
 	@nature = b.h2(class: '_3r-FF99lrp').text
+
 	#this bank loads old transactions only when you scrolling, so..we need to get some sleep
-
 	b.execute_script("window.scrollBy(0,4500)")
 	sleep 5
 	b.execute_script("window.scrollBy(0,4500)")
@@ -53,22 +50,15 @@ class Account
 	sleep 5
 	b.execute_script("window.scrollBy(0,4500)")
 	sleep 5
-	@transactions_ol =  b.ol(class: 'grouped-list grouped-list--compact grouped-list--indent')
+  #b.ol include all transactions
+	@transactions_ol = b.ol(class: ["grouped-list", "grouped-list--compact", "grouped-list--indent"])
 	@transactions = []
-  #Delete me please
-
-  @oldversion = []
-  @transactions_ol.drop(1).each_with_index do |li,i|
-     @oldversion.push(li.text)
-   end
-
-  #Delete him please
-  system("cls")
-  arrayOfMounts = ["JANUARY", "FEBRUARY","MARCH", "APRIL","MAY","JUNE","JULE","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"]
   dataOfTr = ""
-
+  @numberOfTr = 0
 	@transactions_ol.drop(1).each_with_index do |li,i|
+
     @transactionsOfCurData = li.text
+    @numberOfTr += li.text.scan("Balance after transaction").size
 
     for j in 1..(li.text.scan("Balance after transaction").size)
       if li.text.split("\n").first != @transactionsOfCurData.split("\n").first
@@ -79,20 +69,15 @@ class Account
         @transactions.push( li.text.slice(0..(li.text.index("Balance after transaction")-1))  )
 
       else
-         # goes throug all transaction for one data
-
-      dataofTr = li.text.split("\n").first # the data
+# if we have a lot of transactions in a date
+      dataofTr = li.text.split("\n").first # the date
       @transactions.push(@transactionsOfCurData.slice(0..(@transactionsOfCurData.index("Balance after transaction")-1)) )
       @transactionsOfCurData.slice!(0..(@transactionsOfCurData.index("Balance after transaction") + 26 ))
       @transactionsOfCurData.slice!(0..(@transactionsOfCurData.index("\n")))
-
-
-
-    end
       end
+      end
+    end
 end
-end
-
 
 	def get_all_UserInfo
 
@@ -109,10 +94,7 @@ end
 
 end
 
-
 class Transactions
-
-
   def data
     puts @data
   end
@@ -133,36 +115,41 @@ class Transactions
     puts @account_name
   end
 
-  def set_allDataTr(transaction,account_name)
+  def set_allDataTr(transaction,account)
 
   @data = transaction.slice!(0..transaction.index("\n"))
   transaction.chop!
   @currency = transaction.slice!((transaction.rindex("\n")+1)..(transaction.rindex("\n")+1))
   @amount =transaction.slice!(transaction.rindex("\n")..-1)
-  @account_name = account_name
+  @account_name = account.name_account
   @description = transaction
-end
+
+  @account_currancy = account.currency
+  @account_balance = account.balance
+  @account_nature = account.nature
 
 end
 
+  def output_json
+    json_out = {"date" => @data,"description" => @description,"amount" => @amount,"currency" => @currency,"account_name" => @account_name}
+    ("{ 'transaction':[  { #{json_out.to_json}")
+  end
 
-testobj = Account.new
-testobj.set_all_UserInfo
-puts testobj.oldversion
-transobj = Transactions.new
-transobj.set_allDataTr(testobj.transactions[0], testobj.name_account)
+  def general_output
+    json_out = {"name" => @account_name,"currency" => @account_currancy,"balance" => @account_balance,"nature" => @account_nature,"transactions" => output_json}
+    puts ("{ \n'accounts':[")
+    puts json_out.to_json
+    puts "}\n]\n}"
+  end
+end
 
-# puts "Here is the name "
-# puts transobj.account_name
-#
-# puts "Here is the amount"
-# puts transobj.amount
-#
-# puts "Here is the currency"
-# puts transobj.currency
-#
-# puts "Here is the description"
-# puts transobj.description
-#
-# puts "Here is the data"
-# puts transobj.data
+#test
+account_user = Account.new
+account_user.set_all_UserInfo
+puts account_user.get_all_UserInfo
+
+trans_user= Transactions.new
+for i in 0..account_user.numberOfTr-1
+trans_user.set_allDataTr(account_user.transactions[i], account_user)
+trans_user.general_output
+end
