@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Transactions
-  attr_accessor :date, :description, :amount, :currency, :account_name, :count
+  attr_accessor :date, :description, :amount, :currency, :user_name, :count
 
   def initialize(account)
     mounts = { 'January' => '01', 'February' => '02', 'March' => '03', 'April' => '04', 'May' => '05',
@@ -31,25 +31,28 @@ class Transactions
       @description.push(transaction.chomp)
     end
     @currancy = account.currency_account
-    @account_name = account.name_account
+    @user_name = account.user_name
     @account_currancy = account.currency_account
     @account_balance = account.balance_account
-    @account_nature = account.nature_account
+    @type_account = account.type_account
   end
 
   def trans_output_json
     all_transaction = []
     (0..@count - 1).each do |i|
-      trans = { 'amount' => @amount[i], 'currency' => @currancy }
+      trans = { "date" => @date[i], "description" => @description[i], "amount" => @amount[i], 'currency' => @currancy, "account_name" => @type_account }
       all_transaction.push(trans)
     end
     all_transaction
   end
 
   def general_output
+      File.open('temp.json', 'w') do |file|
+        file.puts ""
+      end
     (0..@count - 1).each do |i|
-      trans = { 'date' => @date[i], 'description' => @description[i], 'amount' => @amount[i], 'currency' => @currancy, 'account_name' => @account_name }
-      json_out = { 'account' => ['name' => @account_name, 'currency' => @account_currancy, 'balance' => @account_balance, 'nature' => @account_nature, 'transactions' => [trans]] }
+      trans = { 'date' => @date[i], 'description' => @description[i], 'amount' => @amount[i], 'currency' => @currancy, "account_name" => @type_account }
+      json_out = { 'account' => ['name' => @user_name, 'currency' => @account_currancy, 'balance' => @account_balance, 'nature' => @type_account, 'transactions' => [trans]] }
 
       File.open('temp.json', 'a') do |file|
         file.puts JSON.pretty_generate(json_out)

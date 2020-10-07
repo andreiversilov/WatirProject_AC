@@ -1,18 +1,17 @@
 # frozen_string_literal: true
 
 class Account
-  attr_accessor :name_account, :currency_account, :balance_account
-  attr_accessor :nature_account, :transactions_account, :numberOfTr, :count
+  attr_accessor :user_name, :currency_account, :balance_account
+  attr_accessor :type_account, :transactions_account, :numberOfTr, :count
 
   def initialize(html)
     @count = html.css("li[data-semantic = 'account-item']").size
     world_currency = { '$' => 'USD', '€' => 'EUR', '₽' => 'RUB' }
-    @name_account = html.css('h6.grouped-list__group__heading').first.text
-    @currency_account = world_currency[html.css("span[data-semantic = 'header-available-balance-amount']").text[0]]
-    @balance_account = html.css("span[data-semantic = 'header-available-balance-amount']").text[1..-1].tr(',', '').to_f
-    @nature_account =  html.css('div.css-aralps')[0].text
+    @user_name = html.css('h6.grouped-list__group__heading').first.text
+    @currency_account = world_currency[html.css("span[data-semantic = 'available-balance']").text[0]]
+    @balance_account = html.css("span[data-semantic = 'available-balance']").text[1..-1].tr(',', '').to_f
+    @type_account =  html.css('div.css-aralps')[0].text
     @transactions_account = []
-
     system('cls')
 
     arrayOfSigns = []
@@ -44,6 +43,11 @@ class Account
   end
 
   def get_all_UserInfo
-    json_out = { 'name' => @name_account, 'currency' => @currency_account, 'balance' => @balance_account, 'nature' => @nature_account, 'transactions' => @transactions_account }
+    json_out = { 'name' => @user_name, 'currency' => @currency_account, 'balance' => @balance_account, 'nature' => @type_account, 'transactions' => @transactions_account }
   end
+
+  def data_account
+    data = {"name" => @type_account, "currency" => @currency_account, "balance" => @balance_account, "nature" => "account", "transactions" => [] }
+  end
+
 end

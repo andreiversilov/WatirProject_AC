@@ -27,14 +27,16 @@ class ExampleBank
     @browser.execute_script('window.scrollBy(0,4500)')
     sleep 5
     File.open('account.html', 'w') do |file|
-      file.puts @browser.body(class: 'accounts accounts-index not-native-wrapped loaded').html
+      file.puts @browser.ol(class: 'grouped-list grouped-list--compact').html
+    end
+    File.open('transactions.html', 'w') do |file|
+      file.puts @browser.div(class: 'content__wrapper').html
     end
   end
 
   def fetch_accounts
-    html = Nokogiri::HTML.fragment(@browser.div(class: 'content__wrapper').html)
-
-    parse_accounts(html)
+     html = Nokogiri::HTML(File.read('transactions.html'))
+     parse_accounts(html)
   end
 
   def fetch_transactions(account)
