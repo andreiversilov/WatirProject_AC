@@ -8,10 +8,15 @@ require_relative 'account.rb'
 require_relative 'transactions.rb'
 
 class ExampleBank
+  attr_accessor :browser, :account, :transactions
   def execute
     connect
 
-    fetch_transactions(fetch_accounts)
+    fetch_accounts
+
+    fetch_transactions
+
+    save_json
   end
 
   def connect
@@ -26,32 +31,42 @@ class ExampleBank
     sleep 5
     @browser.execute_script('window.scrollBy(0,4500)')
     sleep 5
-    File.open('account.html', 'w') do |file|
-      file.puts @browser.ol(class: 'grouped-list grouped-list--compact').html
-    end
-    File.open('transactions.html', 'w') do |file|
-      file.puts @browser.div(class: 'content__wrapper').html
-    end
+    @browser
   end
 
   def fetch_accounts
-     html = Nokogiri::HTML(File.read('transactions.html'))
-     parse_accounts(html)
+    html_account = Nokogiri::HTML.fragment(@browser.div(class: 'content__wrapper').html)
+    parse_accounts(html_account)
   end
 
-  def fetch_transactions(account)
-    parse_transactions(account)
+  def fetch_transactions
+    html_transactions = Nokogiri::HTML.fragment(@browser.div(class: 'content__inner').html)
+    parse_transactions(html_transactions)
   end
 
-  def parse_accounts(html)
-    account = Account.new(html)
+  def parse_accounts(html_account)
+    @account = Account.new(html_account)
+    @account_data = account.account_data
+    @account
   end
 
-  def parse_transactions(account)
-    transactions = Transactions.new(account)
-    transactions.general_output
+  def parse_transactions(html_transactions)
+    @transactions = Transactions.new(html_transactions)
+    @transactions_data = transactions.transactions_data
+    @transactions
+  end
+
+  def save_json
+    File.open('temp.json', 'a') do |file|
+      (0..@transactions_data.size - 1).each do |i|
+        @account_data['transactions'] = [@transactions_data[i]]
+        output_json = { 'account' => [@account_data] }
+        file.puts JSON.pretty_generate(output_json)
+        @account_data.delete('transactions')
+      end
+    end
   end
 end
 
-example = ExampleBank.new
-example.execute
+ #exampleBank = ExampleBank.new
+ #exampleBank.execute
