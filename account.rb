@@ -22,7 +22,7 @@ class Account
     end
 
     @tr_count = 0
-#processing of transactions in account.rb was needed in the early technical task
+#NOTE:processing of transactions in account.rb was needed in the early technical task
     html.css('li.grouped-list__group')[2..-1].each do |_li|
       tr_string = _li.text
       (0.._li.text.scan('Balance after transaction').size - 1).each do |_j|
