@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'rspec'
 require_relative 'task'
 require 'watir'
@@ -17,10 +15,10 @@ describe 'ExampleBank' do
 
     expect(accounts.account_data.to_hash).to eq(
       {
-        'name' => 'Demo Everyday Account',
+        'name'     => 'Demo Everyday Account',
         'currency' => 'USD',
-        'balance' => 2082.90,
-        'nature' => 'account'
+        'balance'  => 2082.90,
+        'nature'   => 'account'
       }
     )
 
@@ -28,12 +26,11 @@ describe 'ExampleBank' do
     expect(transaction.tr_count).to eq(99)
     expect(transaction.transactions_data[0]).to eq(
       {
-        'date' => '2020-10-11',
-        'description' => 'Withdrawal - Non BBL ATMCashcard\\Newsxpress Beers Port / 2356',
-        'amount' => 50.0,
-        'currency' => 'USD',
+        'date'         => '2020-10-11',
+        'description'  => 'Withdrawal - Non BBL ATMCashcard\\Newsxpress Beers Port / 2356',
+        'amount'       => 50.0,
+        'currency'     => 'USD',
         'account_name' => 'Demo Everyday Account'
-
       }
     )
   end

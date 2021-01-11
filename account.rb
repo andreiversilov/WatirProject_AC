@@ -3,14 +3,13 @@ class Account
   attr_accessor :type_account, :transactions_account, :tr_count, :count
 
   def initialize(html)
-    @count = html.css("li[data-semantic = 'account-item']").size
-    world_currency = { '$' => 'USD', '€' => 'EUR', '₽' => 'RUB' }
-    @user_name = html.css('h6.grouped-list__group__heading').first.text
-    @currency_account = world_currency[html.css("span[data-semantic = 'available-balance']").text[0]]
-    @balance_account = html.css("span[data-semantic = 'available-balance']").text[1..-1].tr(',', '').to_f
-    @type_account =  html.css('div.css-aralps')[0].text
+    @count                = html.css("li[data-semantic = 'account-item']").size
+    world_currency        = { '$' => 'USD', '€' => 'EUR', '₽' => 'RUB' }
+    @user_name            = html.css('h6.grouped-list__group__heading').first.text
+    @currency_account     = world_currency[html.css("span[data-semantic = 'available-balance']").text[0]]
+    @balance_account      = html.css("span[data-semantic = 'available-balance']").text[1..-1].tr(',', '').to_f
+    @type_account         =  html.css('div.css-aralps')[0].text
     @transactions_account = []
-    system('cls')
 
     arr_Signs = []
 

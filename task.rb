@@ -4,6 +4,7 @@ require 'json'
 require 'nokogiri'
 require 'open-uri'
 require 'byebug'
+require 'pry'
 require_relative 'account.rb'
 require_relative 'transactions.rb'
 
@@ -45,22 +46,20 @@ class ExampleBank
   end
 
   def parse_accounts(html_account)
-    @account = Account.new(html_account)
+    @account      = Account.new(html_account)
     @account_data = account.account_data
-    @account
   end
 
   def parse_transactions(html_transactions)
-    @transactions = Transactions.new(html_transactions)
+    @transactions      = Transactions.new(html_transactions)
     @transactions_data = transactions.transactions_data
-    @transactions
   end
 
   def save_json
     File.open('temp.json', 'a') do |file|
       (0..@transactions_data.size - 1).each do |i|
         @account_data['transactions'] = [@transactions_data[i]]
-        output_json = { 'account' => [@account_data] }
+        output_json                   = { 'account' => [@account_data] }
         file.puts JSON.pretty_generate(output_json)
         @account_data.delete('transactions')
       end
@@ -68,5 +67,3 @@ class ExampleBank
   end
 end
 
- #exampleBank = ExampleBank.new
- #exampleBank.execute

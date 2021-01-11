@@ -3,13 +3,13 @@ class Transactions
   attr_accessor :signs, :tr_count
   def initialize(html)
     world_currency = { '$' => 'USD', '€' => 'EUR', '₽' => 'RUB' }
-    @date = []
-    @signs = []
-    @currency = []
-    @amount = []
-    @description = []
-    @type_account = html.css('h2.css-1nuwk6t').text
-    @tr_count = 0
+    @date          = []
+    @signs         = []
+    @currency      = []
+    @amount        = []
+    @description   = []
+    @type_account  = html.css('h2.css-1nuwk6t').text
+    @tr_count      = 0
 
     (0..html.css('path').size - 1).each do |i|
       @signs.push('+') if html.css('path')[i]['d'][0..2] == 'M5 '
@@ -34,10 +34,10 @@ class Transactions
     mounts = { 'January' => '01', 'February' => '02', 'March' => '03', 'April' => '04', 'May' => '05',
                'June' => '06', 'July' => '07', 'August' => '08', 'September' => '09', 'October' => '10',
                'November' => '11', 'December' => '12' }
-    year = raw_date.to_s.slice!(-5..-1).strip
+    year   = raw_date.to_s.slice!(-5..-1).strip
     number = raw_date.to_s.slice!(-3..-2).strip
     number.insert(0, '0') if number.size == 1
-    mon = raw_date.chop!.strip
+    mon  = raw_date.chop!.strip
     date = "#{year}-#{mounts[mon]}-#{number}"
   end
 
@@ -49,4 +49,4 @@ class Transactions
     end
     all_transaction
   end
-  end
+end
